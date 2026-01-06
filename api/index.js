@@ -44,14 +44,18 @@ var cors = require('cors');
 
 app.use(express.json());
 
+app.set("trust proxy", 1);
+
 app.use(session({
+    name: "connect.sid",
     secret: 'your_secret_key',
     resave: false,
     saveUninitialized: false,
     cookie: {
         secure: process.env.NODE_ENV === "production",
         httpOnly: true,
-        sameSite: false,
+        secure: true,
+        sameSite: none,
         maxAge: 1000 * 60 * 60 * 24
     }
 }));
