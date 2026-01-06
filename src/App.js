@@ -21,7 +21,7 @@ function App() {
 
   async function updateTweets() {
 
-    axios.get('http://localhost:8080/get-data-from-cache').then(response => {
+    axios.get('/api/get-data-from-cache').then(response => {
 
       setTweet(response.data)
 
@@ -34,7 +34,7 @@ function App() {
 
   useEffect(() => {
 
-    axios.get('http://localhost:8080/profile', { withCredentials: true }).then(response => {
+    axios.get('/api/profile', { withCredentials: true }).then(response => {
 
       if (response.data.loggedIn === false) {
 
@@ -68,7 +68,7 @@ function App() {
       return
     }
 
-    axios.post('http://localhost:8080/post-tweet', { title: titleTrim, text: textTrim, id: id }).then(res => {
+    axios.post('/api/post-tweet', { title: titleTrim, text: textTrim, id: id }).then(res => {
 
       updateTweets()
       setText("")

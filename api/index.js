@@ -75,7 +75,7 @@ app.get('/', (req, res) => {
     res.send('Hello World from Express!');
 });
 
-app.post('/register', async (req, res) => {
+app.post('/api/register', async (req, res) => {
 
     try {
         console.log("Register endpoint hit")
@@ -100,7 +100,7 @@ app.post('/register', async (req, res) => {
     }
 });
 
-app.post('/login', async (req, res) => {
+app.post('/api/login', async (req, res) => {
 
     let k = await sql`SELECT * FROM users WHERE username = ${req.body.username} AND password= ${req.body.pwd}`;
 
@@ -114,7 +114,7 @@ app.post('/login', async (req, res) => {
 });
 
 
-app.get('/profile', (req, res) => {
+app.get('/api/profile', (req, res) => {
 
     if (req.session.user) {
         res.json({ loggedIn: true, user: req.session.user })
@@ -124,7 +124,7 @@ app.get('/profile', (req, res) => {
     }
 })
 
-app.get('/logout', (req, res) => {
+app.get('/api/logout', (req, res) => {
     req.session.destroy((err) => {
         if (err) {
             console.error('Error destroying session:', err);
@@ -166,13 +166,13 @@ async function updateRedis() {
 
 
 }
-app.get('/update-redis', async (req, res) => {
+app.get('/api/update-redis', async (req, res) => {
 
     updateRedis()
     res.send("Update redis endpoint")
 })
 
-app.get('/get-data-from-cache', async (req, res) => {
+app.get('/api/get-data-from-cache', async (req, res) => {
 
     const ids = await client.sMembers('tweet_ids:all');
 
@@ -196,7 +196,7 @@ app.get('/get-data-from-cache', async (req, res) => {
     res.send(tweets)
 })
 
-app.post('/post-tweet', async (req, res) => {
+app.post('/api/post-tweet', async (req, res) => {
 
     const today = new Date().toLocaleDateString("en-CA");
 

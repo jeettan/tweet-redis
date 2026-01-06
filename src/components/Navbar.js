@@ -12,7 +12,7 @@ function Navbar() {
 
   useEffect(() => {
 
-    axios.get('http://localhost:8080/profile', { withCredentials: true }).then(response => {
+    axios.get('/api/profile', { withCredentials: true }).then(response => {
 
       if (response.data.loggedIn === true) {
 
@@ -30,7 +30,7 @@ function Navbar() {
 
   const logout = () => {
 
-    axios.get('http://localhost:8080/logout', { withCredentials: true }).then(response => {
+    axios.get('/api/logout', { withCredentials: true }).then(response => {
 
       setLoggedIn(false);
       navigate('/login');

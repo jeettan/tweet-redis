@@ -31,7 +31,7 @@ function Login() {
     const formData = new FormData(loginRef.current);
     const data = Object.fromEntries(formData.entries());
 
-    axios.post('http://localhost:8080/login', data, { withCredentials: true }).then(response => {
+    axios.post('/api/login', data, { withCredentials: true }).then(response => {
 
       toast("Login successful");
       navigate('/')
@@ -65,7 +65,7 @@ function Login() {
       return;
     }
 
-    axios.post('http://localhost:8080/register', data, { withCredentials: true }).then(response => {
+    axios.post('/api/register', data, { withCredentials: true }).then(response => {
 
       toast("Registered succesfully")
       clearForm();
