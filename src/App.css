@@ -200,3 +200,17 @@ textarea::placeholder {
     transform: rotate(360deg);
   }
 }
+
+@media only screen and (min-device-width: 320px) and (max-device-width: 428px) {
+  .tweet-box {
+    width: 80%;
+  }
+
+  .input-tweet-box {
+    width: 80%;
+  }
+
+  .tweet-box textarea {
+    width: 80%;
+  }
+}
