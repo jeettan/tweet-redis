@@ -2,8 +2,12 @@ const express = require('express');
 const app = express();
 var session = require('express-session')
 
+const { RedisStore } = require("connect-redis");
+
 const getPgVersion = require("./startup/pgStartup.js");
 const connectToRedis = require("./startup/redisStartup.js");
+
+const client = require('./config/redis.js')
 
 require('dotenv').config();
 
@@ -14,8 +18,14 @@ var cors = require('cors');
 app.use(express.json());
 app.set("trust proxy", 1);
 
+
 app.use(session({
     name: "connect.sid",
+    store: new RedisStore({
+        client: client,
+        prefix: "sess:",
+        ttl: 60 * 60 * 24
+    }),
     secret: 'your_secret_key',
     resave: false,
     saveUninitialized: false,
@@ -24,15 +34,9 @@ app.use(session({
         sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
         httpOnly: true,
         maxAge: 1000 * 60 * 60 * 24
+
     }
 }));
-
-/*
-
-        secure: process.env.NODE_ENV === "production",
-        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-
-*/
 
 
 app.use(cors({

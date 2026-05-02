@@ -48,8 +48,6 @@ router.post('/login', asyncHandler(async (req, res) => {
     let k = await pg.query(`SELECT id, username FROM users WHERE username = $1 AND password = $2`, [req.body.username, req.body.pwd])
     k = k.rows
 
-    console.log(k)
-
     if (k.length > 0) {
 
         req.session.user = { id: k[0].id, username: k[0].username };
@@ -63,17 +61,27 @@ router.post('/login', asyncHandler(async (req, res) => {
 }))
 
 
-router.get('/profile', (req, res) => {
+router.get('/profile', asyncHandler(async (req, res) => {
 
-    if (req.session.user) {
-        res.json({ loggedIn: true, user: req.session.user })
-    } else {
-
-        res.status(200).json({ loggedIn: false })
+    if (!req.sessionID) {
+        return res.status(200).json({ loggedIn: false });
     }
-})
+
+    const redis = await client.get(`sess:${req.sessionID}`)
+
+    if (!redis) {
+        return res.status(200).json({ loggedIn: false });
+    }
+
+    let user = JSON.parse(redis)
+    user = user.user
+
+    res.json({ loggedIn: true, user: user })
+
+}))
 
 router.get('/logout', (req, res) => {
+
     req.session.destroy((err) => {
         if (err) {
             console.error('Error destroying session:', err);
@@ -88,7 +96,13 @@ async function updateRedis() {
 
     console.log("Updating redis..")
 
-    await client.flushAll();
+    await client.del('tweet_ids:all');
+    const keys = await client.keys('tweet:*');
+
+    if (keys.length > 0) {
+
+        await client.del(keys)
+    }
 
     let k = await pg.query(`
     SELECT 
@@ -103,10 +117,7 @@ async function updateRedis() {
     k = k.rows
     for (i in k) {
 
-        await client.set(
-            `tweet:${k[i].id} `,
-            JSON.stringify(k[i])
-        );
+        await client.set(`tweet:${k[i].id}`, JSON.stringify(k[i]));
 
         await client.sAdd('tweet_ids:all', k[i].id.toString());
 
@@ -121,7 +132,7 @@ router.get('/update-redis', asyncHandler(async (req, res) => {
     res.send("Update redis endpoint")
 }))
 
-router.get('/get-data-from-cache', asyncHandler(async (req, res) => {
+router.get('/get-tweets-from-cache', asyncHandler(async (req, res) => {
 
     const ids = await client.sMembers('tweet_ids:all');
 
@@ -129,16 +140,56 @@ router.get('/get-data-from-cache', asyncHandler(async (req, res) => {
 
     if (!ids || ids.length === 0) {
         await updateRedis()
+        ids = await client.sMembers('tweet_ids:all');
     }
     let tweets = []
     for (i in ids) {
 
-        const tweetData = await client.get(`tweet:${ids[i]} `);
+        const tweetData = await client.get(`tweet:${ids[i]}`);
         tweet = JSON.parse(tweetData)
         tweets.push(tweet)
     }
 
     res.send(tweets)
+}))
+
+async function updateLikesRedis(qu) {
+
+    let id = Number(qu)
+
+    let q = await pg.query(`
+            SELECT * FROM likes WHERE user_id=$1`, [id])
+
+    q = q.rows
+
+    let post_ids = []
+
+    for (let item of q) {
+
+        post_ids.push(item.post_id)
+
+    }
+
+    await client.set(`user:${qu}:likes`, JSON.stringify(post_ids))
+
+}
+
+router.get('/get-likes-from-cache', asyncHandler(async (req, res) => {
+
+    if (!req.session.user.id) return
+
+    let likes = await client.get(`user:${req.session.user.id}:likes`);
+
+    if (!likes || likes.length === 0) {
+
+        await updateLikesRedis(req.session.user.id)
+        likes = await client.get(`user:${req.session.user.id}:likes`);
+
+    }
+
+    let parseLikes = JSON.parse(likes)
+    res.status(200).json(parseLikes)
+
 }))
 
 router.post('/post-tweet', asyncHandler(async (req, res) => {
@@ -165,6 +216,8 @@ router.patch('/like-count', asyncHandler(async (req, res) => {
 router.get('/likes', asyncHandler(async (req, res) => {
 
     const userId = Number(req.query.user_id);
+
+    console.log(userId)
     let k = await pg.query(`SELECT * FROM likes WHERE user_id = $1`, [userId]);
     res.send(k.rows)
 
@@ -173,6 +226,8 @@ router.get('/likes', asyncHandler(async (req, res) => {
 router.post('/likes', asyncHandler(async (req, res) => {
 
     await pg.query(`INSERT INTO likes (user_id, post_id) VALUES ($1,$2)`, [req.body.user_id, req.body.post_id]);
+    await updateLikesRedis(req.body.user_id)
+    await updateRedis()
     console.log("A user liked a post")
     res.send("A user liked a post")
 
@@ -180,16 +235,15 @@ router.post('/likes', asyncHandler(async (req, res) => {
 
 router.delete('/likes', asyncHandler(async (req, res) => {
 
-
     await pg.query(`DELETE FROM likes WHERE user_id = $1 AND post_id = $2`, [req.body.user_id, req.body.post_id]);
+    await updateLikesRedis(req.body.user_id)
+    await updateRedis()
     console.log("A user unliked a post..")
     res.send("A user unliked a post..")
 
 }))
 
 router.get('/likes-by-user-id', asyncHandler(async (req, res) => {
-
-    console.log(req.session.user.id)
 
     const likes = await pg.query(`
     SELECT 
