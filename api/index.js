@@ -20,12 +20,20 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: process.env.NODE_ENV === "production",
-        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        secure: false,
+        sameSite: "lax",
         httpOnly: true,
         maxAge: 1000 * 60 * 60 * 24
     }
 }));
+
+/*
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+
+
+*/
+
 
 app.use(cors({
     origin: "http://localhost:3000",

@@ -36,13 +36,6 @@ function Feed() {
 
   }
 
-  // We have a list of tweets
-
-  // Find existing likes from id from database
-
-  //Filter likes and update state
-
-  //use an array
 
   useEffect(() => {
 
@@ -72,7 +65,6 @@ function Feed() {
     })
 
   }, [tweets]);
-
 
   useEffect(() => {
 
@@ -167,7 +159,7 @@ function Feed() {
     })
 
   }
-  
+
   return (
     <div className="App-main">
       <div className="main-frame">

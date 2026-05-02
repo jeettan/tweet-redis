@@ -14,8 +14,10 @@ async function getPgVersion() {
   )`)
 
     const check_likes_table = await pg.query(`
-    SELECT EXISTS ( SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'tweets'
+    SELECT EXISTS ( SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'likes'
   )`)
+
+    console.log(check_likes_table)
 
     if (check_user_table.rows[0].exists == false) {
 
