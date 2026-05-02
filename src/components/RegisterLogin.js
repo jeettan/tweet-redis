@@ -6,6 +6,7 @@ import { ToastContainer, toast } from 'react-toastify';
 function RegisterLogin() {
 
   const [tab, setTab] = useState(1);
+  const [loading, setLoading] = useState(false)
 
   let navigate = useNavigate();
 
@@ -60,6 +61,8 @@ function RegisterLogin() {
   const handleLogin = (e) => {
 
     e.preventDefault()
+
+    setLoading(true)
     const formData = new FormData(loginRef.current);
     const data = Object.fromEntries(formData.entries());
 
@@ -90,6 +93,9 @@ function RegisterLogin() {
         toast.error("Unexpected application error")
       }
 
+    }).finally(() => {
+
+      setLoading(false)
     })
 
   }
@@ -102,10 +108,10 @@ function RegisterLogin() {
         <h2 id="h2-login">Please enter your login info below</h2>
         <input type="text" placeholder="Username" className="input-box" name="username"></input><br />
         <input type="password" placeholder="Password" className="input-box" name="pwd"></input><br />
-        <button className="button-login">Login</button>
+        <button className="button-login" style={{ opacity: loading ? 0.5 : 1 }} disabled={loading}>Login</button>
         <p id="p-login">Click <span onClick={() => setTab(2)} className="span-clickable">here</span> to register</p>
       </form>
-      </div>
+      </div >
 
     },
     {

@@ -15,56 +15,73 @@ function Feed() {
 
   const [loading, setLoading] = useState(false);
   const [tweetLoading, setTweetLoading] = useState(true);
+  const [loadingStage, setLoadingStage] = useState(0)
 
   const [likes, setLikes] = useState([]);
+
+  const [likeDisabled, setLikeDisabled] = useState(false);
 
   let navigate = useNavigate();
 
   async function updateTweets() {
 
-    axios.get('/get-data-from-cache').then(response => {
+    axios.get('/get-tweets-from-cache').then(response => {
 
       setTweet(response.data)
 
     }).catch(err => {
 
       console.log(err)
-    }).finally(() =>
+    }).finally(() => {
 
-      setTweetLoading(false)
+
+      if (loadingStage < 2) {
+
+        setLoadingStage(prev => prev + 1)
+
+      }
+    }
+
     )
 
   }
 
+  useEffect(() => {
+
+    if (loadingStage >= 2) {
+
+      setTweetLoading(false)
+
+    }
+
+  }, [loadingStage])
 
   useEffect(() => {
 
-    axios.get('/likes', { params: { user_id: id } }).then((res) => {
+    //1
 
-      let r = res.data
+    axios.get('/get-likes-from-cache', { params: { user_id: id } }).then(response => {
 
-      const missing = r.filter(num => !likes.includes(num.post_id));
+      console.log(response)
+      
+      setLikes(response.data.map(Number));
 
-      if (missing.length > 0) {
+    }).catch(err => {
 
-        for (let i in missing) {
+      console.log(err)
+    }).finally(() => {
 
-          let curr = missing[i].post_id
 
-          setLikes((prev) => [
-            ...prev, curr
-          ]);
+      if (loadingStage < 2) {
 
-        }
+        setLoadingStage(prev => prev + 1)
 
       }
 
-    }).catch((err) => {
-
-      console.log(err)
     })
 
-  }, [tweets]);
+  }, [id])
+
 
   useEffect(() => {
 
@@ -121,42 +138,74 @@ function Feed() {
 
   function tapHeart(e, tweet_id) {
 
+    setLikeDisabled(true)
+
     let val = likes.includes(tweet_id) ? -1 : 1
 
-    axios.patch('/like-count', { id: tweet_id, val }).then((res) => {
+    if (val == 1) {
 
-      if (val === 1) {
+      setLikes(prev => [...prev, tweet_id])
+
+      setTweet((prev) =>
+        prev.map((tweet) =>
+          tweet.id === tweet_id
+            ? { ...tweet, likes: tweet.likes + 1 }
+            : tweet
+        )
+      );
+
+      axios.patch('/like-count', { id: tweet_id, val }).then(() => {
+
 
         axios.post('/likes', { user_id: id, post_id: tweet_id }).then((res) => {
 
+          setLikeDisabled(false)
+          toast("You liked a post!")
+
         }).catch((err) =>
           console.log(err)
         )
 
-      } else if (val === -1) {
+
+
+      }).catch((err) => {
+
+        console.log(err)
+      })
+
+
+    } else if (val === -1) {
+
+      setLikes(prev => prev.filter(item => item !== tweet_id));
+
+      setTweet((prev) =>
+        prev.map((tweet) =>
+          tweet.id === tweet_id
+            ? { ...tweet, likes: tweet.likes - 1 }
+            : tweet
+        )
+      )
+
+      axios.patch('/like-count', { id: tweet_id, val }).then(() => {
 
         axios.delete('/likes', { data: { user_id: id, post_id: tweet_id } }).then((res) => {
 
-          setLikes(prev => prev.filter(item => item !== tweet_id));
+          console.log("Deleted like")
+
+          setLikeDisabled(false)
 
         }).catch((err) =>
           console.log(err)
 
         )
-      }
-
-    }).then((res) => {
 
 
-      console.log(res)
-    }).catch((err) => {
+      }).catch((err) => {
 
-      console.log(err)
-    }).finally(() => {
+        console.log(err)
+      })
 
-      updateTweets()
-
-    })
+    }
 
   }
 
@@ -171,13 +220,19 @@ function Feed() {
           <button onClick={postTweet} disabled={loading}>{loading ? <div class="loader"></div> : "Submit"}</button>
         </div>
 
-        {tweetLoading ? "" : tweets.map((tweet) => {
+        {tweetLoading ? <span className="spinner" /> : tweets.map((tweet) => {
 
           return <div className="tweet-box" key={tweet.id}>
             <div className="post-detail"><h4>{tweet.username}</h4><span>Date posted: {tweet.date.split("T")[0]}</span></div>
             <hr />
             <div className="like-box">
-              {likes.includes(tweet.id) ? <img src="/heart_tapped.png" alt="Logo" width={20} onClick={(e) => tapHeart(e, tweet.id)} /> : <img src="/heart.png" alt="Logo" width={20} onClick={(e) => tapHeart(e, tweet.id)} />}
+              {likes.includes(tweet.id) ? <img src="/heart_tapped.png" alt="Logo" width={20} onClick={!likeDisabled ? (e) => tapHeart(e, tweet.id) : undefined} style={{
+                opacity: likeDisabled ? 0.5 : 1,
+                cursor: likeDisabled ? "not-allowed" : "pointer"
+              }} /> : <img src="/heart.png" alt="Logo" width={20} onClick={!likeDisabled ? (e) => tapHeart(e, tweet.id) : undefined} style={{
+                opacity: likeDisabled ? 0.5 : 1,
+                cursor: likeDisabled ? "not-allowed" : "pointer"
+              }} />}
               <span>{tweet.likes} likes</span>
             </div>
             <h3>{tweet.title}</h3>
