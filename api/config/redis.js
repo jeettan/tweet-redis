@@ -6,22 +6,18 @@ const { REDISHOST, REDISPWD, REDISPORT } = process.env;
 const NODE_ENV = process.env.NODE_ENV
 
 const client =
-    NODE_ENV === "development"
-        ? redis.createClient({
+    NODE_ENV === "development" ? redis.createClient({
             socket: {
                 host: "127.0.0.1",
                 port: 6379,
             },
-        })
-        : redis.createClient({
+        }) : redis.createClient({
             username: "default",
             password: REDISPWD,
             socket: {
                 host: REDISHOST,
                 port: Number(REDISPORT),
                 tls: false,
-            },
-        });
-
+            }, });
 
 module.exports = client
