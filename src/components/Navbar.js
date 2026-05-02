@@ -12,12 +12,10 @@ function Navbar() {
 
   useEffect(() => {
 
-    axios.get('/api/profile', { withCredentials: true }).then(response => {
+    axios.get('/profile', { withCredentials: true }).then(response => {
 
       if (response.data.loggedIn === true) {
-
         setLoggedIn(true)
-
       }
 
     }).catch(err => {
@@ -30,7 +28,7 @@ function Navbar() {
 
   const logout = () => {
 
-    axios.get('/api/logout', { withCredentials: true }).then(response => {
+    axios.get('/logout', { withCredentials: true }).then(response => {
 
       setLoggedIn(false);
       navigate('/login');
@@ -47,6 +45,7 @@ function Navbar() {
       <nav><ul>
         <li><Link to="/">Dashboard</Link></li>
         {loggedIn ? <li><Link onClick={() => logout()}>Logout</Link></li> : <li><Link to="/login">Login</Link></li>}
+        {loggedIn ? <li><Link to="/profile">Profile</Link></li> : <Link></Link>}
       </ul>
       </nav>
     </div >

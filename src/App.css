@@ -1,24 +1,28 @@
+.App {
+  position: relative;
+}
+
 .App-main {
-  text-align: center;
-  background: #eb5757;
-  background: -webkit-linear-gradient(to right, #eb5757, #000000);
-  background: linear-gradient(to right, #eb5757, #000000);
-  min-height: 100vh;
-  padding: 30px;
   display: flex;
+  min-height: 100vh;
+  text-align: center;
   justify-content: center;
-  align-items: center;
+  position: relative;
 }
 
 .App-login {
-  background-color: white;
+  display: flex;
+  background-color: rgb(217, 217, 217);
+  padding: 30px;
   border-radius: 10px;
-  width: 500px;
   font-size: 24px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  align-self: flex-start; /* add this */
+  margin-top: auto;
+  margin-bottom: auto;
 }
 
-.tab-1 form {
+.App-login form {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -26,11 +30,7 @@
 }
 
 .tab-2 form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 15px;
+  gap: 10px;
 }
 
 .tab-2 label {
@@ -70,19 +70,16 @@ input {
   font-size: 26px;
 }
 
-ul {
+nav ul {
   list-style-type: none;
   margin: 0;
   padding: 0;
+  display: flex;
   overflow: hidden;
   background-color: #333333;
 }
 
-ul li {
-  float: left;
-}
-
-ul li a {
+nav ul li a {
   display: block;
   color: white;
   cursor: pointer;
@@ -91,12 +88,12 @@ ul li a {
   text-decoration: none;
 }
 
-ul li a:hover {
+nav ul li a:hover {
   background-color: #111111;
 }
 
-.hidden {
-  display: none;
+nav ul li:last-child {
+  margin-left: auto;
 }
 
 .span-clickable {
@@ -110,14 +107,31 @@ label {
 }
 
 .main-frame {
-  background-color: white;
-  max-width: 500px;
-  padding: 30px;
+  background: linear-gradient(135deg, #bbb9b9, #a9a9a9);
+  padding: 25px 80px;
+  width: 35%;
+  display: flex;
+  flex-direction: column;
+}
+
+.tweet-box-input {
+  background-color: lightblue;
+  border-radius: 5px;
+  box-shadow: 4px 8px 16px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 20px;
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+.tweet-box-input input {
+  width: 80%;
 }
 
 .tweet-box {
-  border: 1px solid #ccc;
-  background-color: lightblue;
+  background-color: rgb(255, 255, 255);
   border-radius: 5px;
   box-shadow: 4px 8px 16px rgba(0, 0, 0, 0.2);
   display: flex;
@@ -134,17 +148,45 @@ label {
 
 .tweet-box h3 {
   margin-bottom: 0;
+  margin-top: 18px;
 }
 
 .tweet-box p {
   margin: 0;
-}
-
-.tweet-box span {
+  padding-top: 5px;
   font-size: 12px;
 }
 
-.tweet-box button {
+.tweet-box span {
+  font-size: 10px;
+}
+
+.tweet-box hr {
+  border: none; /* removes default browser hr */
+  height: 1px;
+  width: 100%;
+  background-color: rgb(217, 217, 217); /* line color */
+}
+
+.post-detail {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.like-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.like-box img {
+  cursor: pointer;
+}
+
+.tweet-box-input button {
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -169,6 +211,7 @@ textarea {
   font-size: 14px;
   border-radius: 8px;
   padding: 14px;
+  width: 80%;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); /* shadow-xs */
   display: block;
 }
@@ -195,6 +238,151 @@ textarea::placeholder {
   animation: spin 1s linear infinite;
 }
 
+.lines {
+  position: absolute;
+  min-height: 100vh;
+  inset: 0;
+  display: flex;
+  justify-content: space-between;
+  background-color: #111;
+  top: 47px;
+}
+
+.line {
+  position: relative;
+  width: 1px;
+  height: 100%;
+  overflow: hidden;
+}
+
+.line::after {
+  content: "";
+  display: block;
+  position: absolute;
+  height: 15vh;
+  width: 100%;
+  top: -50%;
+  left: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 0%,
+    #ffffff 75%,
+    #ffffff 100%
+  );
+  animation: drop 7s 0s infinite;
+  animation-fill-mode: forwards;
+  animation-timing-function: cubic-bezier(0.4, 0.26, 0, 0.97);
+}
+
+.line:nth-child(1)::after {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 0%,
+    #ff4500 75%,
+    #ff4500 100%
+  );
+  animation-delay: 0.5s;
+}
+
+.line:nth-child(2)::after {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 0%,
+    #32cd32 75%,
+    #32cd32 100%
+  );
+  animation-delay: 1s;
+}
+
+.line:nth-child(3)::after {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 0%,
+    #1e90ff 75%,
+    #1e90ff 100%
+  );
+  animation-delay: 1.5s;
+}
+
+.line:nth-child(4)::after {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 0%,
+    #ffd700 75%,
+    #ffd700 100%
+  );
+  animation-delay: 2s;
+}
+
+.line:nth-child(5)::after {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 0%,
+    #8a2be2 75%,
+    #8a2be2 100%
+  );
+  animation-delay: 2.5s;
+}
+
+.line:nth-child(6)::after {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 0%,
+    #20b2aa 75%,
+    #20b2aa 100%
+  );
+  animation-delay: 3s;
+}
+
+.line:nth-child(7)::after {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 0%,
+    #dc143c 75%,
+    #dc143c 100%
+  );
+  animation-delay: 3.5s;
+}
+
+.line:nth-child(8)::after {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 0%,
+    #00fa9a 75%,
+    #00fa9a 100%
+  );
+  animation-delay: 4s;
+}
+
+.line:nth-child(9)::after {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 0%,
+    #ff1493 75%,
+    #ff1493 100%
+  );
+  animation-delay: 4.5s;
+}
+
+.line:nth-child(10)::after {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 0%,
+    #00bfff 75%,
+    #00bfff 100%
+  );
+  animation-delay: 5s;
+}
+
+@keyframes drop {
+  0% {
+    top: -50%;
+  }
+  100% {
+    top: 110%;
+  }
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);
@@ -209,8 +397,62 @@ textarea::placeholder {
   .input-tweet-box {
     width: 80%;
   }
+}
 
-  .tweet-box textarea {
-    width: 80%;
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
   }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.profile-board {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 90vh;
+  margin: auto;
+}
+
+.item-board {
+  width: 80%;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+  border-radius: 10px;
+  border: 1px solid rgb(228, 228, 228);
+}
+
+.left-menu {
+  flex: 0 0 20%;
+  display: flex;
+  background-color: white;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.right-menu {
+  border-left: 1px solid rgb(238, 238, 238);
+  flex: 0 0 80%;
+  padding: 10px 30px 50px 30px;
+  background-color: rgb(235, 235, 235);
+  color: black;
+}
+
+.profile-item {
+  width: 100%;
+  font-size: 22px;
+  box-sizing: border-box;
+  text-align: center;
+  padding: 30px;
+  border-bottom: 1px solid rgb(228, 228, 228);
+  cursor: pointer;
+}
+
+.profile-item:hover {
+  text-decoration: underline;
 }
