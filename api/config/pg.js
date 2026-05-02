@@ -13,7 +13,7 @@ const pg = NODE_ENV == "development" ?
         port: 5433,
         database: 'tweet_app'
     }) : new Pool({
-        connectionString: `postgresql://${PGUSER}:${PGPASSWORD}@${PGHOST}/${PGDATABASE}?sslmode=require&channel_binding=require`,
+        connectionString: `postgresql://${PGUSER}:${PGPASSWORD}@${PGHOST}/${PGDATABASE}?sslmode=require`,
         ssl: {
             rejectUnauthorized: false
         }
