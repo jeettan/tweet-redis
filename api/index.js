@@ -36,7 +36,7 @@ app.use(session({
 
 
 app.use(cors({
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000", "tweet-redis.vercel.app"],
     methods: ["POST", "PUT", "GET", "OPTIONS", "HEAD"],
     credentials: true
 }));
