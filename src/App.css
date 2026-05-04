@@ -17,7 +17,7 @@
   border-radius: 10px;
   font-size: 24px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  align-self: flex-start; /* add this */
+  align-self: flex-start;
   margin-top: auto;
   margin-bottom: auto;
 }
@@ -392,12 +392,20 @@ textarea::placeholder {
   }
 }
 
-@media only screen and (min-device-width: 320px) and (max-device-width: 428px) {
+@media only screen and (min-width: 320px) and (max-width: 430px) {
   .tweet-box {
-    width: 80%;
+    width: 150%;
+  }
+
+  .tweet-box-input {
+    width: 120%;
   }
 
   .input-tweet-box {
+    width: 80%;
+  }
+
+  .App-login {
     width: 80%;
   }
 }
