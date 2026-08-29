@@ -3,7 +3,6 @@ const express = require("express");
 const router = express.Router();
 const pg = require('../config/pg.js')
 const client = require('../config/redis.js')
-const axios = require('axios');
 
 const asyncHandler = (fn) => {
     return (req, res, next) => {
@@ -14,6 +13,24 @@ const asyncHandler = (fn) => {
 async function registerUser(fn, ln, user, pwd) {
 
     await pg.query(`INSERT INTO users (first_name, last_name, username, password) VALUES ($1, $2, $3, $4)`, [fn, ln, user, pwd]);
+}
+
+async function postTweet(title, text, user_id, shared_post = false) {
+
+    if (!title || !text) {
+        throw new Error("Title and text are required");
+    }
+
+    if (!user_id) {
+        throw new Error("User id is required");
+    }
+
+    const today = new Date().toLocaleDateString("en-CA");
+
+    await pg.query(`INSERT INTO tweets (title, tweet, date, user_id, shared_post)
+   VALUES ($1, $2, $3, $4, $5)`, [title, text, today, user_id, shared_post])
+
+    await updateRedis()
 }
 
 router.get('/', (req, res) => {
@@ -213,32 +230,7 @@ router.post('/post-tweet', asyncHandler(async (req, res) => {
 
     let { title, text, user_id, shared_post } = req.body
 
-    if (!title || !text) {
-
-        return res.status(400).json({
-
-            error: "Title and text are required"
-        })
-    }
-
-    if (!user_id) {
-
-        return res.status(400).json({
-            error: "User id is required"
-        })
-    }
-
-    if (!shared_post) {
-
-        shared_post = false
-    }
-
-    const today = new Date().toLocaleDateString("en-CA");
-
-    let k = await pg.query(`INSERT INTO tweets (title, tweet, date, user_id, shared_post)
-   VALUES ($1, $2, $3, $4, $5)`, [title, text, today, user_id, shared_post])
-
-    await updateRedis()
+    await postTweet(title, text, user_id, shared_post)
 
     res.send("Tweet successfully posted")
 
@@ -274,14 +266,13 @@ router.post('/share', asyncHandler(async (req, res) => {
 
     const { tweet_id, user_id } = req.body
 
-    let copy = await pg.query(`SELECT * FROM tweets WHERE id= ${tweet_id}`)
+    let copy = await pg.query(`SELECT * FROM tweets WHERE id = $1`, [tweet_id])
 
     if (copy.rowCount !== 1) {
-
         throw new Error("Unknown Error")
     }
 
-    let k = await axios.post("http://localhost:8080/api/post-tweet", { title: copy.rows[0].title, text: copy.rows[0].tweet, user_id: user_id, shared_post: true }, { withCredentials: true, headers: { Cookie: req.get('cookie') } })
+    await postTweet(copy.rows[0].title, copy.rows[0].tweet, user_id, true)
 
     res.send("Shared post updated")
 
