@@ -108,8 +108,8 @@ function RegisterLogin() {
         <h2 id="h2-login">Please enter your login info below</h2>
         <input type="text" placeholder="Username" className="input-box" name="username"></input><br />
         <input type="password" placeholder="Password" className="input-box" name="pwd"></input><br />
-        <button className="button-login" style={{ opacity: loading ? 0.5 : 1 }} disabled={loading}>Login</button>
-        <p id="p-login">Click <span onClick={() => setTab(2)} className="span-clickable">here</span> to register</p>
+        <button name="login" className="button-login" style={{ opacity: loading ? 0.5 : 1 }} disabled={loading}>Login</button>
+        <p id="p-login">Click <span aria-label="changeTab" onClick={() => setTab(2)} className="span-clickable">here</span> to register</p>
       </form>
       </div >
 
@@ -129,8 +129,8 @@ function RegisterLogin() {
         <input type="password" id="pass" placeholder="Desired password" name="pwd" required></input>
         <label htmlFor="password">Password Again</label>
         <input type="password" id="passa" placeholder="Enter password again" name="pwdagain" required></input>
-        <button type="submit" className="button-login">Register</button>
-        <p id="p-login" onClick={() => setTab(1)} style={{ cursor: "pointer", color: "blue", textDecoration: "underline" }}>Back</p>
+        <button type="submit" name="register" className="button-login">Register</button>
+        <p id="p-login" aria-label="back" onClick={() => setTab(1)} style={{ cursor: "pointer", color: "blue", textDecoration: "underline" }}>Back</p>
       </form>
       </div>
     }

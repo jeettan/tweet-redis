@@ -1,11 +1,17 @@
 const pg = require('../config/pg.js');
 
 async function getPgVersion() {
-    try {
-        const result = await pg.query('SELECT 1');
-        console.log(result.rows[0].version);
+  try {
+    const result = await pg.query('SELECT 1');
+    if (result.rows[0]['?column?'] == 1) {
 
-        await pg.query(`
+      console.log("PG works!")
+    } else {
+
+      throw new Error("PG Not working")
+    }
+
+    await pg.query(`
       CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
         first_name VARCHAR(50),
@@ -15,7 +21,7 @@ async function getPgVersion() {
       );
     `);
 
-        await pg.query(`
+    await pg.query(`
       CREATE TABLE IF NOT EXISTS tweets (
         id SERIAL PRIMARY KEY,
         title VARCHAR(50),
@@ -25,7 +31,7 @@ async function getPgVersion() {
       );
     `);
 
-        await pg.query(`
+    await pg.query(`
       CREATE TABLE IF NOT EXISTS likes (
         id SERIAL PRIMARY KEY,
         user_id INTEGER,
@@ -33,10 +39,10 @@ async function getPgVersion() {
       );
     `);
 
-        console.log("Postgres startup check complete");
-    } catch (err) {
-        console.error("Postgres startup failed:", err.message);
-    }
+    console.log("Postgres startup check complete");
+  } catch (err) {
+    console.error("Postgres startup failed:", err.message);
+  }
 }
 
 module.exports = getPgVersion;

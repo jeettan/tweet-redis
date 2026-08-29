@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import './bootstrap-modal.css';
 import './index.css';
 import App from './pages/App';
 import Login from './pages/Login'
@@ -15,7 +16,6 @@ root.render(
         <Route path="/" element={<App />} />
         <Route path="/profile" element={<Profile />} />
       </Routes>
-
     </React.StrictMode>
   </Router>
 );

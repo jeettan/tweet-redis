@@ -1,0 +1,27 @@
+{
+    "name": "tweet-clone-api",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "start": "node server.js",
+        "dev": "node server.js",
+        "test": "jest --verbose",
+        "migrate": "node migrate.js",
+        "migrate:create": "node-pg-migrate create"
+    },
+    "dependencies": {
+        "connect-redis": "^9.0.0",
+        "cookie-parser": "^1.4.7",
+        "cors": "^2.8.5",
+        "dotenv": "^17.2.3",
+        "express": "^4.22.1",
+        "express-session": "^1.19.0",
+        "pg": "^8.20.0",
+        "redis": "^5.12.1"
+    },
+    "devDependencies": {
+        "jest": "^27.5.1",
+        "node-pg-migrate": "^8.0.4",
+        "supertest": "^7.2.2"
+    }
+}
